@@ -13,85 +13,200 @@
       --border-gray: #c5d3df;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "PingFang HK", "Microsoft JhengHei", "Noto Sans TC", Arial, sans-serif; user-select: none; }
-    html, body { width: 100vw; height: 100vh; overflow: hidden; background-color: var(--white); }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      font-family: "PingFang HK", "Microsoft JhengHei", "Noto Sans TC", Arial, sans-serif; 
+      user-select: none;
+    }
 
-    .display-screen { width: 100vw; height: 100vh; background-color: var(--white); display: flex; flex-direction: column; }
+    html, body { 
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: var(--white);
+    }
 
+    .display-screen {
+      width: 100vw;
+      height: 100vh;
+      background-color: var(--white);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 頂部時鐘區域：白底橙字、上下排列靠右 */
     .clock-bar {
       background-color: var(--white);
-      color: var(--orange); 
-      padding: 1vh 2vw;
+      color: var(--orange);
+      padding: 0.8vh 2.5vw;
       display: flex;
-      justify-content: flex-end;
-      align-items: center;
-      font-size: clamp(14px, 1.8vh, 22px);
-      font-weight: 800;
-      height: 7vh;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+      height: auto;
+      min-height: 8vh;
       border-bottom: 1px solid var(--border-gray);
     }
-    .clock-bar span { margin-left: 10px; font-size: clamp(24px, 4vh, 50px); font-weight: 900; color: var(--orange); }
 
-    .grid-wrapper { flex: 1; display: flex; flex-direction: column; background-color: var(--border-gray); }
+    .clock-title {
+      font-size: clamp(12px, 1.6vh, 20px);
+      font-weight: 700;
+      line-height: 1.2;
+    }
 
-    .eta-header-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5px; background-color: var(--border-gray); }
-    .eta-header-bar div { background-color: var(--orange); color: var(--white); font-weight: bold; font-size: clamp(12px, 1.6vh, 20px); height: 3.5vh; display: flex; align-items: center; justify-content: flex-end; padding-right: 1.5vw; }
+    .clock-bar span {
+      font-size: clamp(32px, 5vh, 60px);
+      font-weight: 900;
+      line-height: 1.1;
+    }
 
-    .grid-container { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(4, 1fr); gap: 1.5px; background-color: var(--border-gray); }
-    .cell { background-color: var(--white); display: flex; justify-content: space-between; align-items: flex-start; padding: 1.5vh 1.5vw; }
+    /* 確保分隔線貫穿：用 wrapper 包住標題與表格 */
+    .grid-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--border-gray);
+    }
 
-    .left-col { display: flex; flex-direction: column; justify-content: flex-start; gap: 0.5vh; }
-    .route-num { font-size: clamp(38px, 6vh, 80px); font-weight: 900; color: var(--black); line-height: 0.85; letter-spacing: -1px; }
-    .route-dest { display: flex; flex-direction: column; }
-    .dest-zh { font-size: clamp(13px, 1.8vh, 24px); font-weight: 800; color: var(--black); line-height: 1.2; }
-    .dest-en { font-size: clamp(8px, 1.1vh, 14px); font-weight: 700; color: #555; text-transform: uppercase; line-height: 1.1; }
-    .route-eta { font-size: clamp(38px, 6vh, 80px); font-weight: 900; color: var(--blue); text-align: right; line-height: 0.85; letter-spacing: 0.5px; align-self: flex-start; }
+    /* 橙底白字標題列 */
+    .eta-header-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5px; /* 與表格間距相同，讓線條貫穿 */
+      background-color: var(--border-gray);
+    }
+
+    .eta-header-bar div {
+      background-color: var(--orange);
+      color: var(--white);
+      font-weight: bold;
+      font-size: clamp(12px, 1.6vh, 20px);
+      height: 3.5vh;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 1.5vw;
+    }
+
+    /* 路線網格 */
+    .grid-container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      background-color: var(--border-gray);
+      gap: 1.5px;
+    }
+
+    .cell {
+      background-color: var(--white);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start; /* 確保內容靠上 (置頂) */
+      padding: 1.5vh 1.5vw;
+    }
+
+    /* 左側區塊：路線編號與目的地 */
+    .left-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 0.5vh;
+    }
+
+    /* 路線編號：加粗加大 */
+    .route-num { 
+      font-size: clamp(38px, 6vh, 80px); 
+      font-weight: 900; 
+      color: var(--black); 
+      line-height: 0.85;
+      letter-spacing: -1px;
+    }
+
+    /* 目的地：維持原有大小 */
+    .route-dest { 
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .dest-zh {
+      font-size: clamp(14px, 2vh, 26px);
+      font-weight: 800;
+      color: var(--black);
+      line-height: 1.25;
+    }
+
+    .dest-en {
+      font-size: clamp(9px, 1.2vh, 16px);
+      font-weight: 700;
+      color: #555;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    /* 藍色時間：框格內置頂加大 */
+    .route-eta { 
+      font-size: clamp(38px, 6vh, 80px); 
+      font-weight: 900; 
+      color: var(--blue); 
+      text-align: right; 
+      line-height: 0.85;
+      letter-spacing: 0.5px;
+      align-self: flex-start; /* 確保置頂 */
+    }
   </style>
 </head>
 <body>
 
-  <div class="display-screen">
+  <div class="display-screen" id="screen">
     <div class="clock-bar">
-      現在時間 Current Time : <span id="currentTime">--:--</span>
+      <div class="clock-title">現在時間 Current Time :</div>
+      <span id="currentTime">--:--</span>
     </div>
 
+    <!-- 標題與表格被 wrapper 包住以顯示連貫直線 -->
     <div class="grid-wrapper">
       <div class="eta-header-bar">
-        <div>預計時間 ETA</div><div>預計時間 ETA</div><div>預計時間 ETA</div>
+        <div>預計時間 ETA</div>
+        <div>預計時間 ETA</div>
+        <div>預計時間 ETA</div>
       </div>
       <div class="grid-container" id="routeGrid"></div>
     </div>
   </div>
 
   <script>
-    const STOP_ID = "001552";
+    const STOP_ID = "001552"; // GTC 機場地面運輸中心
     const ITEMS_PER_PAGE = 12;
 
-    // 恢復您完整要求的路線清單
-    const initialList = [
-      { route: "A30", destZh: "往 梨木樹", destEn: "TO LEI MUK SHUE" },
-      { route: "A31", destZh: "往 荃灣(如心廣場)", destEn: "TO TSUEN WAN (NINA TOWER)" },
-      { route: "A32", destZh: "往 葵涌邨", destEn: "TO KWAI CHUNG ESTATE" },
-      { route: "A33", destZh: "往 屯門公路轉車站", destEn: "TO TUEN MUN ROAD BBI" },
-      { route: "A34", destZh: "往 洪水橋(洪元路)", destEn: "TO HUNG SHUI KIU" },
-      { route: "A36", destZh: "往 錦上路站", destEn: "TO KAM SHEUNG ROAD STATION" },
-      { route: "A38", destZh: "往 荃灣(荃威花園)", destEn: "TO TSUEN WAN (ALLWAY)" },
-      { route: "A41", destZh: "往 碩門邨", destEn: "TO SHEK MUN ESTATE" },
-      { route: "A41P", destZh: "往 烏溪沙站", destEn: "TO WU KAI SHA STATION" },
-      { route: "A42", destZh: "往 黃泥頭", destEn: "TO WONG NAI TAU" },
-      { route: "A43", destZh: "往 粉嶺(聯和墟)", destEn: "TO LUEN WO HUI" },
-      { route: "A43P", destZh: "往 粉嶺(聯和墟)", destEn: "TO LUEN WO HUI" },
-      { route: "A46", destZh: "往 火炭(駿景園)", destEn: "TO FO TAN" },
-      { route: "A47X", destZh: "往 大埔(太和)", destEn: "TO TAI PO (TAI WO)" },
-      { route: "E32", destZh: "往 葵芳(南)", destEn: "TO KWAI FONG (SOUTH)" },
-      { route: "E33", destZh: "往 屯門市中心", destEn: "TO TUEN MUN CENTRAL" },
-      { route: "E36", destZh: "往 元朗(八鄉路)", destEn: "TO YUEN LONG (PAT HEUNG)" },
-      { route: "E37", destZh: "往 天水圍市中心", destEn: "TO TIN SHUI WAI TOWN" },
-      { route: "E41", destZh: "往 大埔頭", destEn: "TO TAI PO TAU" },
-      { route: "E42", destZh: "往 沙田(博康)", destEn: "TO SHA TIN (POK HONG)" }
+    // 按英文字母與數字順序排列之基礎路線清單
+    const fallbackList = [
+      { route: "A30", destZh: "往 梨木樹", destEn: "TO LEI MUK SHUE", eta: "17:35" },
+      { route: "A31", destZh: "往 荃灣(如心廣場)", destEn: "TO TSUEN WAN (NINA TOWER)", eta: "17:30" },
+      { route: "A32", destZh: "往 葵涌邨", destEn: "TO KWAI CHUNG ESTATE", eta: "17:45" },
+      { route: "A33", destZh: "往 屯門公路轉車站", destEn: "TO TUEN MUN ROAD BBI", eta: "17:50" },
+      { route: "A34", destZh: "往 洪水橋(洪元路)", destEn: "TO HUNG SHUI KIU", eta: "17:45" },
+      { route: "A36", destZh: "往 錦上路站", destEn: "TO KAM SHEUNG ROAD STATION", eta: "17:25" },
+      { route: "A38", destZh: "往 荃灣(荃威花園)", destEn: "TO TSUEN WAN (ALLWAY)", eta: "18:05" },
+      { route: "A41", destZh: "往 碩門邨", destEn: "TO SHEK MUN ESTATE", eta: "17:35" },
+      { route: "A41P", destZh: "往 烏溪沙站", destEn: "TO WU KAI SHA STATION", eta: "17:35" },
+      { route: "A42", destZh: "往 黃泥頭", destEn: "TO WONG NAI TAU", eta: "18:00" },
+      { route: "A43", destZh: "往 粉嶺(聯和墟)", destEn: "TO LUEN WO HUI", eta: "17:35" },
+      { route: "A43P", destZh: "往 粉嶺(聯和墟)", destEn: "TO LUEN WO HUI", eta: "17:30" },
+      { route: "A46", destZh: "往 火炭(駿景園)", destEn: "TO FO TAN", eta: "17:45" },
+      { route: "A47X", destZh: "往 大埔(太和)", destEn: "TO TAI PO (TAI WO)", eta: "18:00" },
+      { route: "E32", destZh: "往 葵芳(南)", destEn: "TO KWAI FONG (SOUTH)", eta: "17:28" },
+      { route: "E33", destZh: "往 屯門市中心", destEn: "TO TUEN MUN CENTRAL", eta: "17:30" },
+      { route: "E36", destZh: "往 元朗(八鄉路)", destEn: "TO YUEN LONG (PAT HEUNG)", eta: "17:35" },
+      { route: "E37", destZh: "往 天水圍市中心", destEn: "TO TIN SHUI WAI TOWN", eta: "17:40" },
+      { route: "E41", destZh: "往 大埔頭", destEn: "TO TAI PO TAU", eta: "17:45" },
+      { route: "E42", destZh: "往 沙田(博康)", destEn: "TO SHA TIN (POK HONG)", eta: "17:50" }
     ];
 
-    let routesData = [...initialList];
+    let routesData = [...fallbackList];
     let currentPage = 0;
 
     function updateClock() {
@@ -100,62 +215,98 @@
         `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     }
 
-    async function fetchData() {
-      const proxyUrl = 'https://api.allorigins.win/get?url=';
-      const targetUrl = encodeURIComponent(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${STOP_ID}`);
-      
-      try {
-        const res = await fetch(proxyUrl + targetUrl);
-        const json = await res.json();
-        const data = JSON.parse(json.contents);
+    function formatTime(etaStr) {
+      if (!etaStr) return "-";
+      const d = new Date(etaStr);
+      if (isNaN(d.getTime())) return "-";
+      return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    }
 
-        if (data?.data) {
+    async function fetchData() {
+      try {
+        const res = await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${STOP_ID}`);
+        const json = await res.json();
+
+        if (json && Array.isArray(json.data) && json.data.length > 0) {
+          const nowMs = Date.now() - 60000; // 允許 1 分鐘內的即將開出班次
           const map = new Map();
-          data.data.forEach(item => {
-            if (item.eta && !map.has(item.route)) {
-              map.set(item.route, {
-                eta: `${String(new Date(item.eta).getHours()).padStart(2, '0')}:${String(new Date(item.eta).getMinutes()).padStart(2, '0')}`
-              });
+
+          json.data.forEach(item => {
+            // 嚴格過濾：僅保留有提供 ETA 且開出時間未過期（正在服務）的班次
+            if (item.eta) {
+              const etaMs = new Date(item.eta).getTime();
+              if (!isNaN(etaMs) && etaMs >= nowMs) {
+                // 每條路線保留最快開出的一班
+                if (!map.has(item.route) || etaMs < map.get(item.route).rawTime) {
+                  map.set(item.route, {
+                    route: item.route,
+                    destZh: `往 ${item.dest_tc || ''}`,
+                    destEn: `TO ${item.dest_en ? item.dest_en.toUpperCase() : ''}`,
+                    eta: formatTime(item.eta),
+                    rawTime: etaMs
+                  });
+                }
+              }
             }
           });
-          
-          routesData = initialList.map(r => ({
-            ...r,
-            eta: map.get(r.route)?.eta || "-"
-          })).sort((a, b) => a.route.localeCompare(b.route, 'en', { numeric: true }));
-          
-          renderPage(currentPage);
+
+          if (map.size > 0) {
+            // 自然英文字母與數字順序排序 (A30 -> A31 -> E32 -> NA31)
+            routesData = Array.from(map.values()).sort((a, b) =>
+              a.route.localeCompare(b.route, 'en', { numeric: true, sensitivity: 'base' })
+            );
+          }
         }
-      } catch (err) { console.warn("Proxy Error", err); }
+      } catch (err) {
+        console.warn("API 連線異常，維持基礎清單：", err);
+      }
+      renderPage(currentPage);
     }
 
     function renderPage(pageIndex) {
-      const gridContainer = document.getElementById('routeGrid');
-      gridContainer.innerHTML = '';
-      const pageItems = routesData.slice(pageIndex * ITEMS_PER_PAGE, (pageIndex + 1) * ITEMS_PER_PAGE);
+      const totalPages = Math.ceil(routesData.length / ITEMS_PER_PAGE) || 1;
+      currentPage = pageIndex % totalPages;
+      if (currentPage < 0) currentPage = totalPages - 1;
+
+      const grid = document.getElementById('routeGrid');
+      grid.innerHTML = '';
+
+      const startIndex = currentPage * ITEMS_PER_PAGE;
+      const pageItems = routesData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
       for (let i = 0; i < ITEMS_PER_PAGE; i++) {
         const item = pageItems[i];
         const cell = document.createElement('div');
         cell.className = 'cell';
+
         if (item) {
           cell.innerHTML = `
             <div class="left-col">
               <div class="route-num">${item.route}</div>
-              <div class="route-dest"><div class="dest-zh">${item.destZh}</div><div class="dest-en">${item.destEn}</div></div>
+              <div class="route-dest">
+                <div class="dest-zh">${item.destZh}</div>
+                <div class="dest-en">${item.destEn}</div>
+              </div>
             </div>
             <div class="route-eta">${item.eta}</div>
           `;
         }
-        gridContainer.appendChild(cell);
+        grid.appendChild(cell);
       }
     }
 
-    document.addEventListener('dblclick', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); });
-    setInterval(updateClock, 1000);
-    setInterval(fetchData, 30000);
-    setInterval(() => { currentPage = (currentPage + 1) % Math.ceil(routesData.length / ITEMS_PER_PAGE); renderPage(currentPage); }, 10000);
+    document.addEventListener('dblclick', () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      else document.exitFullscreen().catch(() => {});
+    });
+
     updateClock();
+    setInterval(updateClock, 1000);
+
+    renderPage(0);
     fetchData();
+    setInterval(fetchData, 30000);
+    setInterval(() => renderPage(currentPage + 1), 10000);
   </script>
 </body>
 </html>
