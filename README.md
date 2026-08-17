@@ -37,6 +37,21 @@ Pre-built binaries for Windows, macOS, and Linux are automatically compiled via 
    ```bash
    sudo xattr -r -d com.apple.quarantine /Applications/lwb-gtc-pids-simulator.app
 
+Since this is a non-commercial open-source project without a paid Apple Developer certificate, macOS Gatekeeper may show a warning stating that the app is "damaged" or from an "unidentified developer" upon first launch.
+
+**Solutions (Choose one):**
+
+* **Option 1: Right-Click to Open (No Terminal required)**
+  1. Move `lwb-gtc-pids-simulator.app` to your **Applications** folder.
+  2. Hold the **`Control`** key and **Right-Click** the app icon.
+  3. Select **Open** from the menu.
+  4. In the pop-up warning dialog, click **Open** (or **Open Anyway**). You will only need to do this once.
+
+* **Option 2: Terminal Command**
+  Run the following command in your Terminal to remove the quarantine attribute:
+  ```bash
+  sudo xattr -r -d com.apple.quarantine /Applications/lwb-gtc-pids-simulator.app
+
 ---
 
 ## 🌟 Features / 功能特色
