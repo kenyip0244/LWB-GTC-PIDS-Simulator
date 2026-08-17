@@ -28,6 +28,15 @@ Pre-built binaries for Windows, macOS, and Linux are automatically compiled via 
 | **macOS** | `.dmg` / `.zip` | 支援 Intel 與 Apple Silicon (M 系列) 晶片 |
 | **Linux** | `.deb` / `.zip` | 支援 Debian / Ubuntu 等 Linux 發行版 |
 
+### 🍎 macOS 安裝注意事項 / macOS Notice
+由於本專案為非商業開源軟體，未購買 Apple 開發者證書，macOS 系統初次開啟時可能會提示「檔案已損壞」或「無法驗證開發者」。
+
+**解決方法（二選一）：**
+1. **右鍵開啟**：在 App 圖示上按住 `Control` 鍵點選「右鍵」 ＞ 選擇「打開」 ＞ 點擊「仍要打開」。
+2. **終端機指令**：打開 Terminal 輸入以下指令解除隔離：
+   ```bash
+   sudo xattr -r -d com.apple.quarantine /Applications/lwb-gtc-pids-simulator.app
+
 ---
 
 ## 🌟 Features / 功能特色
