@@ -40,8 +40,8 @@
     .clock-bar {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1.5px; /* 與下方表格保持相同的間距基準 */
-      background-color: var(--white); /* 讓間距隱形 */
+      gap: 1.5px; 
+      background-color: var(--white); 
       min-height: 14vh; 
     }
 
@@ -49,15 +49,15 @@
       background-color: var(--white);
     }
 
-    /* 時鐘容器：放在第 3 欄，並靠左對齊 */
+    /* 時鐘容器：放在第 3 欄，並靠右對齊 */
     .clock-wrapper {
       grid-column: 3;
       background-color: var(--white);
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: flex-start; /* 靠左對齊 */
-      padding: 0 0.8vw; /* 與下方路線表格的 padding 保持一致，實現完美對齊 */
+      align-items: flex-end;
+      padding-right: 1.5vw; 
     }
 
     .clock-title {
@@ -65,7 +65,7 @@
       font-weight: 700;
       color: var(--orange);
       line-height: 1.2;
-      margin-bottom: 1.8vh; /* 產生空行效果 */
+      margin-bottom: 0.5vh; 
     }
 
     .clock-time {
@@ -75,7 +75,6 @@
       line-height: 1;
     }
 
-    /* 確保分隔線貫穿：用 wrapper 包住標題與表格 */
     .grid-wrapper {
       flex: 1;
       display: flex;
@@ -83,7 +82,6 @@
       background-color: var(--border-gray);
     }
 
-    /* 橙底白字標題列 */
     .eta-header-bar {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -103,7 +101,6 @@
       padding-right: 1.5vw;
     }
 
-    /* 路線網格：5 行 */
     .grid-container {
       flex: 1;
       display: grid;
@@ -113,7 +110,6 @@
       gap: 1.5px;
     }
 
-    /* 貼住框線：大幅縮減 padding */
     .cell {
       background-color: var(--white);
       display: flex;
@@ -122,7 +118,6 @@
       padding: 0.5vh 0.8vw; 
     }
 
-    /* 左側區塊：路線編號與目的地 */
     .left-col {
       display: flex;
       flex-direction: column;
@@ -130,7 +125,6 @@
       gap: 0vh;
     }
 
-    /* 路線編號：按比例加大 */
     .route-num { 
       font-size: clamp(45px, 7.2vh, 95px); 
       font-weight: 900; 
@@ -139,7 +133,6 @@
       letter-spacing: -1px;
     }
 
-    /* 目的地：按比例加大 */
     .route-dest { 
       display: flex;
       flex-direction: column;
@@ -162,7 +155,6 @@
       line-height: 1;
     }
 
-    /* 藍色時間：按比例加大並置頂 */
     .route-eta { 
       font-size: clamp(45px, 7.2vh, 95px); 
       font-weight: 900; 
@@ -177,7 +169,6 @@
 <body>
 
   <div class="display-screen" id="screen">
-    <!-- 頂部時鐘區域 -->
     <div class="clock-bar">
       <div class="clock-empty"></div>
       <div class="clock-empty"></div>
@@ -187,7 +178,6 @@
       </div>
     </div>
 
-    <!-- 標題與表格被 wrapper 包住以顯示連貫直線 -->
     <div class="grid-wrapper">
       <div class="eta-header-bar">
         <div>預計時間 ETA</div>
@@ -198,11 +188,34 @@
     </div>
   </div>
 
-<script>
+  <script>
     const STOP_ID = "001552"; // GTC 機場地面運輸中心
-    const ITEMS_PER_PAGE = 15; // 3欄 x 5行
+    const ITEMS_PER_PAGE = 15; // 每頁 15 筆 (3欄 x 5行)
 
-    let routesData = [];
+    const fallbackList = [
+      { route: "A30", destZh: "往 梨木樹", destEn: "TO LEI MUK SHUE", eta: "17:35" },
+      { route: "A31", destZh: "往 荃灣(如心廣場)", destEn: "TO TSUEN WAN (NINA TOWER)", eta: "17:30" },
+      { route: "A32", destZh: "往 葵涌邨", destEn: "TO KWAI CHUNG ESTATE", eta: "17:45" },
+      { route: "A33", destZh: "往 屯門公路轉車站", destEn: "TO TUEN MUN ROAD BBI", eta: "17:50" },
+      { route: "A34", destZh: "往 洪水橋(洪元路)", destEn: "TO HUNG SHUI KIU (HUNG YUEN ROAD)", eta: "17:45" },
+      { route: "A36", destZh: "往 錦上路站", destEn: "TO KAM SHEUNG ROAD STATION", eta: "17:25" },
+      { route: "A38", destZh: "往 荃灣(荃威花園)", destEn: "TO TSUEN WAN (ALLWAY GARDENS)", eta: "18:05" },
+      { route: "A41", destZh: "往 碩門邨", destEn: "TO SHEK MUN ESTATE", eta: "17:35" },
+      { route: "A41P", destZh: "往 烏溪沙站", destEn: "TO WU KAI SHA STATION", eta: "17:35" },
+      { route: "A42", destZh: "往 黃泥頭", destEn: "TO WONG NAI TAU", eta: "18:00" },
+      { route: "A43", destZh: "往 粉嶺(聯和墟)", destEn: "TO FANLING (LUEN WO HUI)", eta: "17:35" },
+      { route: "A43P", destZh: "往 粉嶺(聯和墟)", destEn: "TO FANLING (LUEN WO HUI)", eta: "17:30" },
+      { route: "A46", destZh: "往 火炭(駿景園)", destEn: "TO FO TAN(ROYAL ASCOT)", eta: "17:45" },
+      { route: "A47X", destZh: "往 大埔(太和)", destEn: "TO TAI PO (TAI WO)", eta: "18:00" },
+      { route: "E32", destZh: "往 葵芳(南)", destEn: "TO KWAI FONG (SOUTH)", eta: "17:28" },
+      { route: "E33", destZh: "往 屯門市中心", destEn: "TO TUEN MUN CENTRAL", eta: "17:30" },
+      { route: "E36", destZh: "往 元朗(八鄉路)", destEn: "TO YUEN LONG (PAT HEUNG ROAD)", eta: "17:35" },
+      { route: "E37", destZh: "往 天水圍市中心", destEn: "TO TIN SHUI WAI TOWN CENTRE", eta: "17:40" },
+      { route: "E41", destZh: "往 大埔頭", destEn: "TO TAI PO TAU", eta: "17:45" },
+      { route: "E42", destZh: "往 沙田(博康)", destEn: "TO SHA TIN (POK HONG)", eta: "17:50" }
+    ];
+
+    let routesData = [...fallbackList];
     let currentPage = 0;
 
     function updateClock() {
@@ -220,19 +233,18 @@
 
     async function fetchData() {
       try {
-        // 加入時間戳記 _t 確保每次都是最新的實時資料，避開瀏覽器/ISP 快取
+        // 加入 _t 時間戳記，強迫瀏覽器抓取最新實時數據，不讀取 Cache
         const res = await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${STOP_ID}?_t=${Date.now()}`);
         const json = await res.json();
 
-        if (json && Array.isArray(json.data)) {
+        if (json && Array.isArray(json.data) && json.data.length > 0) {
           const nowMs = Date.now() - 60000; 
           const map = new Map();
 
           json.data.forEach(item => {
             if (item.eta) {
               const etaMs = new Date(item.eta).getTime();
-              // 過濾掉已過期的班次，保留未來的班次
-              if (etaMs >= nowMs) {
+              if (!isNaN(etaMs) && etaMs >= nowMs) {
                 if (!map.has(item.route) || etaMs < map.get(item.route).rawTime) {
                   map.set(item.route, {
                     route: item.route,
@@ -246,22 +258,24 @@
             }
           });
 
-          // 如果有抓到資料，更新路線列表
           if (map.size > 0) {
             routesData = Array.from(map.values()).sort((a, b) =>
               a.route.localeCompare(b.route, 'en', { numeric: true, sensitivity: 'base' })
             );
-            renderPage(currentPage); // 抓到即更新介面
+            // 抓到新資料後立刻渲染，不等待分頁計時器
+            renderPage(currentPage); 
           }
         }
       } catch (err) {
-        console.warn("無法取得即時 API 資料，請檢查連線：", err);
+        console.warn("API 連線異常，維持基礎清單：", err);
       }
     }
 
     function renderPage(pageIndex) {
       const totalPages = Math.ceil(routesData.length / ITEMS_PER_PAGE) || 1;
       currentPage = pageIndex % totalPages;
+      if (currentPage < 0) currentPage = totalPages - 1;
+
       const grid = document.getElementById('routeGrid');
       grid.innerHTML = '';
 
@@ -294,13 +308,14 @@
       else document.exitFullscreen().catch(() => {});
     });
 
-    // 啟動流程
     updateClock();
-    setInterval(updateClock, 1000); // 秒級時鐘刷新
+    setInterval(updateClock, 1000);
 
-    fetchData(); 
-    setInterval(fetchData, 15000); // 改為 15 秒刷新一次 API 以確保「實時」感
-    setInterval(() => { currentPage = (currentPage + 1) % Math.ceil((routesData.length || 1) / ITEMS_PER_PAGE); renderPage(currentPage); }, 10000);
+    renderPage(0);
+    fetchData();
+    // 將抓取資料的頻率改為 15 秒一次，確保高度實時
+    setInterval(fetchData, 15000);
+    setInterval(() => renderPage(currentPage + 1), 10000);
   </script>
 </body>
 </html>
