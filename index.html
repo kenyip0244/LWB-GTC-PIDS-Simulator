@@ -3,420 +3,150 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>龍運顧客服務及售票處 - 下一班車 Next Departure</title>
+  <title>下一班車 Next Departure 模擬</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: "PingFang HK", "Microsoft JhengHei", "Noto Sans TC", "Helvetica Neue", Arial, sans-serif;
-      user-select: none;
+    :root {
+      --orange: #f36c21;
+      --blue: #0b3c75;
+      --white: #ffffff;
+      --black: #000000;
     }
 
-    body {
-      background-color: #222;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
 
-    /* 橙色大型客務中心外框看板 */
-    .kiosk-panel {
-      width: 980px;
-      background-color: #f36c21;
-      border: 8px solid #333;
-      border-radius: 4px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
-    }
+    body { background-color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
 
-    /* 看板頂部標題 */
-    .kiosk-top-header {
-      padding: 16px 20px 10px 20px;
-      display: flex;
-      align-items: baseline;
-      gap: 16px;
-      color: #111111;
-    }
-
-    .kiosk-top-title-zh {
-      font-size: 64px;
-      font-weight: 900;
-      letter-spacing: 4px;
-      line-height: 1;
-    }
-
-    .kiosk-top-title-en {
-      font-size: 48px;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      line-height: 1;
-    }
-
-    /* 內嵌液晶螢幕本體 */
-    .screen-bezel {
-      margin: 0 20px;
-      background-color: #1a1a1a;
-      padding: 10px;
-      border-radius: 2px;
-      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
-    }
-
+    /* 螢幕主容器 */
     .display-screen {
-      width: 100%;
-      height: 520px;
-      background-color: #d8ebf9;
+      width: 900px;
+      height: 600px;
+      background-color: var(--white);
+      border: 4px solid #000;
       display: flex;
       flex-direction: column;
-      position: relative;
+      overflow: hidden;
     }
 
-    /* 螢幕頂部時鐘區 */
-    .screen-header {
-      height: 48px;
-      padding: 4px 20px;
+    /* 1. 頂部橙底時鐘區 */
+    .clock-bar {
+      background-color: var(--orange);
+      color: var(--white);
+      padding: 10px 20px;
       display: flex;
       justify-content: flex-end;
       align-items: center;
+      font-weight: bold;
+      font-size: 20px;
     }
 
-    .clock-container {
-      text-align: right;
-      line-height: 1.15;
+    /* 2. 橙底白字「預計時間 ETA」標題列 */
+    .eta-header-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      background-color: var(--orange);
+      color: var(--white);
+      font-weight: bold;
+      text-align: center;
+      padding: 5px 0;
     }
 
-    .clock-label {
-      font-size: 11px;
-      color: #2b3b52;
-      font-weight: 700;
-    }
-
-    .clock-value {
-      font-size: 24px;
-      font-weight: 800;
-      color: #0d294d;
-      letter-spacing: 1px;
-    }
-
-    /* 路線表格 (3 欄 × 4 列) */
+    /* 路線表格網格 */
     .grid-container {
       flex: 1;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       grid-template-rows: repeat(4, 1fr);
-      border-top: 1.5px solid #82add0;
-      border-left: 1.5px solid #82add0;
-      background-color: #82add0;
-      gap: 1.5px;
+      border-top: 1px solid #ccc;
     }
 
-    .cell-card {
-      background-color: #d8ebf9;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* 頂部紅底「預計時間 ETA」標題列 */
-    .cell-top-bar {
-      background-color: #ba1e1e;
-      color: #ffffff;
-      font-size: 11px;
-      font-weight: bold;
-      text-align: right;
-      padding: 1px 8px;
-      height: 16px;
-      line-height: 14px;
-    }
-
-    .cell-body {
-      flex: 1;
+    .cell {
+      border-right: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
       display: flex;
       align-items: center;
-      padding: 0 10px;
+      padding: 0 15px;
+      background-color: var(--white);
     }
 
-    .cell-route {
-      font-size: 38px;
-      font-weight: 900;
-      color: #0b3c75;
-      width: 100px;
-      letter-spacing: -1px;
-    }
+    /* 黑色路線資訊 */
+    .route-num { font-size: 32px; font-weight: 900; color: var(--black); width: 80px; }
+    .route-dest { font-size: 14px; font-weight: bold; color: var(--black); flex: 1; line-height: 1.2; }
 
-    .cell-destination {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      line-height: 1.15;
-      padding-right: 4px;
-    }
+    /* 藍色開出時間 */
+    .route-eta { font-size: 28px; font-weight: 800; color: var(--blue); width: 80px; text-align: right; }
 
-    .dest-chinese {
-      font-size: 13.5px;
-      font-weight: 800;
-      color: #111111;
-    }
-
-    .dest-english {
-      font-size: 9.5px;
-      font-weight: 700;
-      color: #3b4d61;
-      text-transform: uppercase;
-    }
-
-    .cell-eta {
-      font-size: 32px;
-      font-weight: 900;
-      color: #0b3c75;
-      text-align: right;
-      min-width: 85px;
-      letter-spacing: 0.5px;
-    }
-
-    /* 看板底部標題 */
-    .kiosk-bottom-footer {
-      padding: 18px 20px 22px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      color: #111111;
-    }
-
-    .kiosk-bottom-title-zh {
-      font-size: 58px;
-      font-weight: 900;
-      letter-spacing: 6px;
-      line-height: 1;
-    }
-
-    .kiosk-bottom-title-en {
-      font-size: 38px;
-      font-weight: 800;
-      letter-spacing: 0.5px;
-      line-height: 1;
-    }
-
-    /* 頁碼控制指示列 */
-    .page-controller {
-      background-color: #e5621a;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 6px 20px;
-      border-top: 1px solid #d45512;
-      font-size: 12px;
-      color: #fff;
-    }
-
-    .ctrl-btn {
-      background: #111;
-      color: #fff;
-      border: none;
-      padding: 4px 12px;
-      font-size: 12px;
-      cursor: pointer;
-      border-radius: 3px;
-      font-weight: bold;
-    }
-
-    .ctrl-btn:hover {
-      background: #333;
+    .footer-bar {
+        background: #eee;
+        padding: 5px;
+        text-align: center;
+        font-size: 12px;
     }
   </style>
 </head>
 <body>
 
-  <div class="kiosk-panel">
-    <!-- 頂部橙底黑字大標題 -->
-    <div class="kiosk-top-header">
-      <div class="kiosk-top-title-zh">下一班車</div>
-      <div class="kiosk-top-title-en">Next Departure</div>
+  <div class="display-screen">
+    <!-- 頂部橙底時間 -->
+    <div class="clock-bar">
+      現在時間 Current Time: <span id="currentTime">12:19</span>
     </div>
 
-    <!-- 液晶螢幕區域 -->
-    <div class="screen-bezel">
-      <div class="display-screen">
-        <!-- 螢幕時鐘 (無秒數) -->
-        <div class="screen-header">
-          <div class="clock-container">
-            <div class="clock-label">現在時間 Current Time :</div>
-            <div class="clock-value" id="currentTime">12:19</div>
-          </div>
-        </div>
-
-        <!-- 3x4 路線表格 -->
-        <div class="grid-container" id="routeGrid"></div>
-      </div>
+    <!-- 橙底白字標題 -->
+    <div class="eta-header-bar">
+      <div>預計時間 ETA</div>
+      <div>預計時間 ETA</div>
+      <div>預計時間 ETA</div>
     </div>
 
-    <!-- 底部橙底黑字大標題 -->
-    <div class="kiosk-bottom-footer">
-      <div class="kiosk-bottom-title-zh">旅客日票 · 車票 · 查詢</div>
-      <div class="kiosk-bottom-title-en">Day Pass · Tickets · Enquiry</div>
-    </div>
-
-    <!-- 控制切頁與頁碼狀態 -->
-    <div class="page-controller">
-      <button class="ctrl-btn" onclick="prevPage()">◀ 上一頁</button>
-      <span id="pageIndicator">載入資料中...</span>
-      <button class="ctrl-btn" onclick="nextPage()">下一頁 ▶</button>
-    </div>
+    <!-- 路線資料區 -->
+    <div class="grid-container" id="routeGrid"></div>
+    
+    <div class="footer-bar">每 10 秒自動刷新</div>
   </div>
 
   <script>
-    // 預設監聽站點：機場 (地面運輸中心) 001552
-    const STOP_ID = "001552";
-    const ITEMS_PER_PAGE = 12;
+    const STOP_ID = "001552"; // 機場地面運輸中心
 
-    let routesData = [];
-    let currentPage = 0;
-    let autoPageTimer = null;
-
-    // 備份離線預設資料（若 API 暫時連不上時展示）
-    const fallbackData = [
-      { route: "A30", destZh: "往 梨木樹", destEn: "TO LEI MUK SHUE", eta: "12:35" },
-      { route: "A31", destZh: "往 荃灣(如心廣場)", destEn: "TO TSUEN WAN (NINA TOWER)", eta: "12:30" },
-      { route: "A32", destZh: "往 葵涌邨", destEn: "TO KWAI CHUNG ESTATE", eta: "13:05" },
-      { route: "A33", destZh: "往 屯門公路轉車站", destEn: "TO TUEN MUN ROAD BBI", eta: "12:50" },
-      { route: "A34", destZh: "往 洪水橋(洪元路)", destEn: "TO HUNG SHUI KIU (HUNG YUEN ROAD)", eta: "12:45" },
-      { route: "A36", destZh: "往 錦上路站", destEn: "TO KAM SHEUNG ROAD STATION", eta: "12:25" },
-      { route: "A38", destZh: "往 荃灣(荃威花園)", destEn: "TO TSUEN WAN (ALLWAY GARDENS)", eta: "13:05" },
-      { route: "A41", destZh: "往 碩門邨", destEn: "TO SHEK MUN ESTATE", eta: "12:35" },
-      { route: "A41P", destZh: "往 烏溪沙站", destEn: "TO WU KAI SHA STATION", eta: "12:35" },
-      { route: "A42", destZh: "往 黃泥頭", destEn: "TO WONG NAI TAU", eta: "13:00" },
-      { route: "A43", destZh: "往 粉嶺(聯和墟)", destEn: "TO LUEN WO HUI", eta: "12:35" },
-      { route: "A43P", destZh: "往 粉嶺(聯和墟)", destEn: "TO LUEN WO HUI", eta: "12:30" },
-      { route: "A46", destZh: "往 火炭(駿景園)", destEn: "TO FO TAN", eta: "13:15" },
-      { route: "A47X", destZh: "往 大埔(太和)", destEn: "TO TAI PO (TAI WO)", eta: "13:00" },
-      { route: "E32", destZh: "往 葵芳(南)", destEn: "TO KWAI FONG (SOUTH)", eta: "12:40" },
-      { route: "E36A", destZh: "往 元朗(德業街)", destEn: "TO YUEN LONG", eta: "12:52" }
-    ];
-
-    // 更新時鐘（無秒數：HH:MM）
+    // 更新時鐘
     function updateClock() {
       const now = new Date();
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('currentTime').textContent = `${hours}:${minutes}`;
+      document.getElementById('currentTime').textContent = 
+        `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
     }
 
-    // 時間格式化為 HH:MM
-    function formatETA(etaString) {
-      if (!etaString) return "-";
-      const date = new Date(etaString);
-      if (isNaN(date.getTime())) return "-";
-      const h = String(date.getHours()).padStart(2, '0');
-      const m = String(date.getMinutes()).padStart(2, '0');
-      return `${h}:${m}`;
-    }
-
-    // 取得政府開放資料 API
-    async function fetchETADefault() {
+    // 取得資料
+    async function fetchData() {
       try {
-        const response = await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${STOP_ID}`);
-        const result = await response.json();
+        const res = await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${STOP_ID}`);
+        const json = await res.json();
+        const grid = document.getElementById('routeGrid');
+        grid.innerHTML = '';
 
-        if (result && Array.isArray(result.data) && result.data.length > 0) {
-          const map = new Map();
-          result.data.forEach(item => {
-            if (!map.has(item.route) && item.eta) {
-              map.set(item.route, {
-                route: item.route,
-                destZh: `往 ${item.dest_tc}`,
-                destEn: `TO ${item.dest_en.toUpperCase()}`,
-                eta: formatETA(item.eta)
-              });
-            }
-          });
-
-          routesData = Array.from(map.values()).sort((a, b) =>
-            a.route.localeCompare(b.route, undefined, { numeric: true, sensitivity: 'base' })
-          );
-        } else {
-          routesData = fallbackData;
-        }
-      } catch (err) {
-        console.warn("無法取得線上 API，載入預設路線清單：", err);
-        routesData = fallbackData;
-      }
-      renderPage(currentPage);
-    }
-
-    // 渲染頁面
-    function renderPage(pageIndex) {
-      const totalPages = Math.ceil(routesData.length / ITEMS_PER_PAGE) || 1;
-      currentPage = pageIndex % totalPages;
-      if (currentPage < 0) currentPage = totalPages - 1;
-
-      const grid = document.getElementById('routeGrid');
-      grid.innerHTML = '';
-
-      const startIndex = currentPage * ITEMS_PER_PAGE;
-      const pageItems = routesData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
-      for (let i = 0; i < ITEMS_PER_PAGE; i++) {
-        const item = pageItems[i];
-        const card = document.createElement('div');
-        card.className = 'cell-card';
-
-        // 前三格顯示紅底預計時間 ETA 標題
-        const showHeader = (i < 3);
-
-        if (item) {
-          card.innerHTML = `
-            <div class="cell-top-bar" style="${showHeader ? '' : 'visibility:hidden;'}">預計時間 ETA</div>
-            <div class="cell-body">
-              <div class="cell-route">${item.route}</div>
-              <div class="cell-destination">
-                <div class="dest-chinese">${item.destZh}</div>
-                <div class="dest-english">${item.destEn}</div>
-              </div>
-              <div class="cell-eta">${item.eta}</div>
-            </div>
+        // 取前 12 筆資料
+        const items = json.data.slice(0, 12);
+        
+        items.forEach(item => {
+          const etaDate = new Date(item.eta);
+          const timeStr = `${String(etaDate.getHours()).padStart(2, '0')}:${String(etaDate.getMinutes()).padStart(2, '0')}`;
+          
+          const div = document.createElement('div');
+          div.className = 'cell';
+          div.innerHTML = `
+            <div class="route-num">${item.route}</div>
+            <div class="route-dest">${item.dest_tc}</div>
+            <div class="route-eta">${timeStr}</div>
           `;
-        } else {
-          card.innerHTML = `
-            <div class="cell-top-bar" style="visibility:hidden;">-</div>
-            <div class="cell-body" style="visibility:hidden;"></div>
-          `;
-        }
-        grid.appendChild(card);
+          grid.appendChild(div);
+        });
+      } catch (e) {
+        console.error("無法連線", e);
       }
-
-      document.getElementById('pageIndicator').textContent = 
-        `第 ${currentPage + 1} 頁 / 共 ${totalPages} 頁 (每 10 秒自動輪播)`;
     }
 
-    function nextPage() {
-      renderPage(currentPage + 1);
-      resetAutoPlay();
-    }
-
-    function prevPage() {
-      renderPage(currentPage - 1);
-      resetAutoPlay();
-    }
-
-    function resetAutoPlay() {
-      clearInterval(autoPageTimer);
-      autoPageTimer = setInterval(() => {
-        renderPage(currentPage + 1);
-      }, 10000);
-    }
-
-    // 初始化運作
-    updateClock();
     setInterval(updateClock, 1000);
-
-    fetchETADefault();
-    setInterval(fetchETADefault, 30000);
-
-    resetAutoPlay();
+    setInterval(fetchData, 30000);
+    updateClock();
+    fetchData();
   </script>
 </body>
 </html>
