@@ -36,30 +36,31 @@
       flex-direction: column;
     }
 
-    /* 頂部時鐘區域：增加高度至 12vh */
+    /* 頂部時鐘區域：調整高度並加入空行排列 */
     .clock-bar {
       background-color: var(--white);
       color: var(--orange);
-      padding: 1vh 2.5vw;
+      padding: 1.5vh 2.5vw;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: flex-end;
       height: auto;
-      min-height: 12vh; 
+      min-height: 14vh; 
       border-bottom: 1px solid var(--border-gray);
     }
 
     .clock-title {
-      font-size: clamp(14px, 2vh, 24px);
+      font-size: clamp(16px, 2.2vh, 26px);
       font-weight: 700;
       line-height: 1.2;
+      margin-bottom: 1.8vh; /* 產生空行效果 */
     }
 
     .clock-bar span {
-      font-size: clamp(36px, 6vh, 70px);
+      font-size: clamp(45px, 7vh, 85px); /* 加大時鐘字體 */
       font-weight: 900;
-      line-height: 1.1;
+      line-height: 1;
     }
 
     /* 確保分隔線貫穿：用 wrapper 包住標題與表格 */
@@ -90,7 +91,7 @@
       padding-right: 1.5vw;
     }
 
-    /* 路線網格：由 4 行改為 5 行 */
+    /* 路線網格：5 行 */
     .grid-container {
       flex: 1;
       display: grid;
@@ -100,12 +101,13 @@
       gap: 1.5px;
     }
 
+    /* 貼住框線：大幅縮減 padding */
     .cell {
       background-color: var(--white);
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      padding: 1.2vh 1.5vw;
+      padding: 0.5vh 0.8vw; 
     }
 
     /* 左側區塊：路線編號與目的地 */
@@ -113,43 +115,44 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      gap: 0.3vh;
+      gap: 0vh; /* 減少間距讓資訊更緊湊 */
     }
 
-    /* 路線編號：微調字體大小以適應 5 行 */
+    /* 路線編號：按比例加大 */
     .route-num { 
-      font-size: clamp(32px, 5.5vh, 75px); 
+      font-size: clamp(45px, 7.2vh, 95px); 
       font-weight: 900; 
       color: var(--black); 
       line-height: 0.85;
       letter-spacing: -1px;
     }
 
-    /* 目的地 */
+    /* 目的地：按比例加大 */
     .route-dest { 
       display: flex;
       flex-direction: column;
       justify-content: center;
+      margin-top: 0.5vh;
     }
 
     .dest-zh {
-      font-size: clamp(13px, 1.8vh, 24px);
+      font-size: clamp(16px, 2.4vh, 32px);
       font-weight: 800;
       color: var(--black);
-      line-height: 1.25;
-    }
-
-    .dest-en {
-      font-size: clamp(9px, 1.1vh, 15px);
-      font-weight: 700;
-      color: #555;
-      text-transform: uppercase;
       line-height: 1.1;
     }
 
-    /* 藍色時間：微調字體大小以適應 5 行 */
+    .dest-en {
+      font-size: clamp(11px, 1.4vh, 18px);
+      font-weight: 700;
+      color: #555;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+
+    /* 藍色時間：按比例加大並置頂 */
     .route-eta { 
-      font-size: clamp(32px, 5.5vh, 75px); 
+      font-size: clamp(45px, 7.2vh, 95px); 
       font-weight: 900; 
       color: var(--blue); 
       text-align: right; 
