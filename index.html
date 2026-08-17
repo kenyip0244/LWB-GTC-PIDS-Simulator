@@ -36,28 +36,28 @@
       flex-direction: column;
     }
 
-    /* 頂部時鐘區域：白底橙字、上下排列靠右 */
+    /* 頂部時鐘區域：增加高度至 12vh */
     .clock-bar {
       background-color: var(--white);
       color: var(--orange);
-      padding: 0.8vh 2.5vw;
+      padding: 1vh 2.5vw;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: flex-end;
       height: auto;
-      min-height: 8vh;
+      min-height: 12vh; 
       border-bottom: 1px solid var(--border-gray);
     }
 
     .clock-title {
-      font-size: clamp(12px, 1.6vh, 20px);
+      font-size: clamp(14px, 2vh, 24px);
       font-weight: 700;
       line-height: 1.2;
     }
 
     .clock-bar span {
-      font-size: clamp(32px, 5vh, 60px);
+      font-size: clamp(36px, 6vh, 70px);
       font-weight: 900;
       line-height: 1.1;
     }
@@ -74,7 +74,7 @@
     .eta-header-bar {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1.5px; /* 與表格間距相同，讓線條貫穿 */
+      gap: 1.5px; 
       background-color: var(--border-gray);
     }
 
@@ -82,20 +82,20 @@
       background-color: var(--orange);
       color: var(--white);
       font-weight: bold;
-      font-size: clamp(12px, 1.6vh, 20px);
-      height: 3.5vh;
+      font-size: clamp(12px, 1.8vh, 22px);
+      height: 4vh;
       display: flex;
       align-items: center;
       justify-content: flex-end;
       padding-right: 1.5vw;
     }
 
-    /* 路線網格 */
+    /* 路線網格：由 4 行改為 5 行 */
     .grid-container {
       flex: 1;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: repeat(4, 1fr);
+      grid-template-rows: repeat(5, 1fr); 
       background-color: var(--border-gray);
       gap: 1.5px;
     }
@@ -104,8 +104,8 @@
       background-color: var(--white);
       display: flex;
       justify-content: space-between;
-      align-items: flex-start; /* 確保內容靠上 (置頂) */
-      padding: 1.5vh 1.5vw;
+      align-items: flex-start;
+      padding: 1.2vh 1.5vw;
     }
 
     /* 左側區塊：路線編號與目的地 */
@@ -113,19 +113,19 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      gap: 0.5vh;
+      gap: 0.3vh;
     }
 
-    /* 路線編號：加粗加大 */
+    /* 路線編號：微調字體大小以適應 5 行 */
     .route-num { 
-      font-size: clamp(38px, 6vh, 80px); 
+      font-size: clamp(32px, 5.5vh, 75px); 
       font-weight: 900; 
       color: var(--black); 
       line-height: 0.85;
       letter-spacing: -1px;
     }
 
-    /* 目的地：維持原有大小 */
+    /* 目的地 */
     .route-dest { 
       display: flex;
       flex-direction: column;
@@ -133,29 +133,29 @@
     }
 
     .dest-zh {
-      font-size: clamp(14px, 2vh, 26px);
+      font-size: clamp(13px, 1.8vh, 24px);
       font-weight: 800;
       color: var(--black);
       line-height: 1.25;
     }
 
     .dest-en {
-      font-size: clamp(9px, 1.2vh, 16px);
+      font-size: clamp(9px, 1.1vh, 15px);
       font-weight: 700;
       color: #555;
       text-transform: uppercase;
       line-height: 1.1;
     }
 
-    /* 藍色時間：框格內置頂加大 */
+    /* 藍色時間：微調字體大小以適應 5 行 */
     .route-eta { 
-      font-size: clamp(38px, 6vh, 80px); 
+      font-size: clamp(32px, 5.5vh, 75px); 
       font-weight: 900; 
       color: var(--blue); 
       text-align: right; 
       line-height: 0.85;
       letter-spacing: 0.5px;
-      align-self: flex-start; /* 確保置頂 */
+      align-self: flex-start; 
     }
   </style>
 </head>
@@ -180,7 +180,7 @@
 
   <script>
     const STOP_ID = "001552"; // GTC 機場地面運輸中心
-    const ITEMS_PER_PAGE = 12;
+    const ITEMS_PER_PAGE = 15; // 更改為每頁 15 筆 (3欄 x 5行)
 
     // 按英文字母與數字順序排列之基礎路線清單
     const fallbackList = [
@@ -232,11 +232,9 @@
           const map = new Map();
 
           json.data.forEach(item => {
-            // 嚴格過濾：僅保留有提供 ETA 且開出時間未過期（正在服務）的班次
             if (item.eta) {
               const etaMs = new Date(item.eta).getTime();
               if (!isNaN(etaMs) && etaMs >= nowMs) {
-                // 每條路線保留最快開出的一班
                 if (!map.has(item.route) || etaMs < map.get(item.route).rawTime) {
                   map.set(item.route, {
                     route: item.route,
@@ -251,7 +249,6 @@
           });
 
           if (map.size > 0) {
-            // 自然英文字母與數字順序排序 (A30 -> A31 -> E32 -> NA31)
             routesData = Array.from(map.values()).sort((a, b) =>
               a.route.localeCompare(b.route, 'en', { numeric: true, sensitivity: 'base' })
             );
