@@ -36,30 +36,42 @@
       flex-direction: column;
     }
 
-    /* 頂部時鐘區域：調整高度並加入空行排列 */
+    /* 頂部時鐘區域：改為 3 欄網格以對齊下方的第三欄 */
     .clock-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5px; /* 與下方表格保持相同的間距基準 */
+      background-color: var(--white); /* 讓間距隱形 */
+      min-height: 14vh; 
+    }
+
+    .clock-empty {
       background-color: var(--white);
-      color: var(--orange);
-      padding: 1.5vh 2.5vw;
+    }
+
+    /* 時鐘容器：放在第 3 欄，並靠左對齊 */
+    .clock-wrapper {
+      grid-column: 3;
+      background-color: var(--white);
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: flex-end;
-      height: auto;
-      min-height: 14vh; 
-      border-bottom: 1px solid var(--border-gray);
+      align-items: flex-start; /* 靠左對齊 */
+      padding: 0 0.8vw; /* 與下方路線表格的 padding 保持一致，實現完美對齊 */
     }
 
     .clock-title {
       font-size: clamp(16px, 2.2vh, 26px);
       font-weight: 700;
+      color: var(--orange);
       line-height: 1.2;
       margin-bottom: 1.8vh; /* 產生空行效果 */
     }
 
-    .clock-bar span {
-      font-size: clamp(45px, 7vh, 85px); /* 加大時鐘字體 */
+    .clock-time {
+      font-size: clamp(45px, 7vh, 85px); 
       font-weight: 900;
+      color: var(--orange);
       line-height: 1;
     }
 
@@ -115,7 +127,7 @@
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
-      gap: 0vh; /* 減少間距讓資訊更緊湊 */
+      gap: 0vh;
     }
 
     /* 路線編號：按比例加大 */
@@ -165,9 +177,14 @@
 <body>
 
   <div class="display-screen" id="screen">
+    <!-- 頂部時鐘區域 -->
     <div class="clock-bar">
-      <div class="clock-title">現在時間 Current Time :</div>
-      <span id="currentTime">--:--</span>
+      <div class="clock-empty"></div>
+      <div class="clock-empty"></div>
+      <div class="clock-wrapper">
+        <div class="clock-title">現在時間 Current Time :</div>
+        <div class="clock-time" id="currentTime">--:--</div>
+      </div>
     </div>
 
     <!-- 標題與表格被 wrapper 包住以顯示連貫直線 -->
@@ -183,7 +200,7 @@
 
   <script>
     const STOP_ID = "001552"; // GTC 機場地面運輸中心
-    const ITEMS_PER_PAGE = 15; // 更改為每頁 15 筆 (3欄 x 5行)
+    const ITEMS_PER_PAGE = 15; // 每頁 15 筆 (3欄 x 5行)
 
     // 按英文字母與數字順序排列之基礎路線清單
     const fallbackList = [
@@ -231,7 +248,7 @@
         const json = await res.json();
 
         if (json && Array.isArray(json.data) && json.data.length > 0) {
-          const nowMs = Date.now() - 60000; // 允許 1 分鐘內的即將開出班次
+          const nowMs = Date.now() - 60000; 
           const map = new Map();
 
           json.data.forEach(item => {
