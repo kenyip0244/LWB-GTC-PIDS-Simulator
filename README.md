@@ -62,7 +62,7 @@ This is a fan-made project created for educational and simulation purposes only.
 
 此專案為純前端網頁，無需安裝任何依賴套件或後端伺服器。
 1. 下載或 Clone 此儲存庫。
-2. 使用任何現代瀏覽器（Chrome, Edge, Safari, Firefox）開啟 https://kenyip0244.github.io/LWB-GTC-PIDS-Simulator/。
+2. 使用任何現代瀏覽器（Chrome, Edge, Safari, Firefox）開啟 https://kenyip0244.github.io/LWB-GTC-PIDS-Simulator/ 。
 3. 在畫面上 **雙擊（Double Click）** 即可進入全螢幕模式。
 
 ## 📡 資料來源
