@@ -24,7 +24,7 @@ A web-based simulator replicating the Passenger Information Display System (PIDS
 
 This project requires no build tools or server backend.
 1. Clone or download this repository.
-2. Open `index.html` in any modern web browser (Chrome, Edge, Safari, Firefox).
+2. Open https://kenyip0244.github.io/LWB-GTC-PIDS-Simulator/ in any modern web browser (Chrome, Edge, Safari, Firefox).
 3. **Double-click** the screen to enter Fullscreen mode.
 
 ## 📡 Data Source
@@ -62,7 +62,7 @@ This is a fan-made project created for educational and simulation purposes only.
 
 此專案為純前端網頁，無需安裝任何依賴套件或後端伺服器。
 1. 下載或 Clone 此儲存庫。
-2. 使用任何現代瀏覽器（Chrome, Edge, Safari, Firefox）直接開啟 `index.html`。
+2. 使用任何現代瀏覽器（Chrome, Edge, Safari, Firefox）開啟 https://kenyip0244.github.io/LWB-GTC-PIDS-Simulator/。
 3. 在畫面上 **雙擊（Double Click）** 即可進入全螢幕模式。
 
 ## 📡 資料來源
