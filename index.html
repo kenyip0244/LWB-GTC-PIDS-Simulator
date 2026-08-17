@@ -36,7 +36,6 @@
       flex-direction: column;
     }
 
-    /* 頂部時鐘區域：3 欄網格對齊 */
     .clock-bar {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -47,7 +46,6 @@
 
     .clock-empty { background-color: var(--white); }
 
-    /* 時鐘容器：靠右對齊 */
     .clock-wrapper {
       grid-column: 3;
       background-color: var(--white);
@@ -162,6 +160,15 @@
       letter-spacing: 0.5px;
       align-self: flex-start; 
     }
+
+    .loading-msg {
+      grid-column: 1/4; 
+      text-align: center; 
+      font-size: clamp(24px, 4vh, 40px); 
+      padding-top: 5vh; 
+      font-weight: bold; 
+      color: var(--blue);
+    }
   </style>
 </head>
 <body>
@@ -182,40 +189,42 @@
         <div>預計時間 ETA</div>
         <div>預計時間 ETA</div>
       </div>
-      <div class="grid-container" id="routeGrid"></div>
+      <div class="grid-container" id="routeGrid">
+        <div class="loading-msg">🔄 正在連線至九巴系統載入即時班次...</div>
+      </div>
     </div>
   </div>
 
   <script>
     const ITEMS_PER_PAGE = 15; 
 
-    // 我們要監控的目標路線
+    // 使用您更新後、更精準的路線中英對照清單
     const fallbackList = [
-      { route: "A30", destZh: "往 梨木樹", destEn: "TO LEI MUK SHUE", eta: "17:35" },
-      { route: "A31", destZh: "往 荃灣(如心廣場)", destEn: "TO TSUEN WAN (NINA TOWER)", eta: "17:30" },
-      { route: "A32", destZh: "往 葵涌邨", destEn: "TO KWAI CHUNG ESTATE", eta: "17:45" },
-      { route: "A33", destZh: "往 屯門公路轉車站", destEn: "TO TUEN MUN ROAD BBI", eta: "17:50" },
-      { route: "A34", destZh: "往 洪水橋(洪元路)", destEn: "TO HUNG SHUI KIU", eta: "17:45" },
-      { route: "A36", destZh: "往 錦上路站", destEn: "TO KAM SHEUNG ROAD STATION", eta: "17:25" },
-      { route: "A38", destZh: "往 荃灣(荃威花園)", destEn: "TO TSUEN WAN (ALLWAY)", eta: "18:05" },
-      { route: "A41", destZh: "往 碩門邨", destEn: "TO SHEK MUN ESTATE", eta: "17:35" },
-      { route: "A41P", destZh: "往 烏溪沙站", destEn: "TO WU KAI SHA STATION", eta: "17:35" },
-      { route: "A42", destZh: "往 黃泥頭", destEn: "TO WONG NAI TAU", eta: "18:00" },
-      { route: "A43", destZh: "往 粉嶺(聯和墟)", destEn: "TO FANLING (LUEN WO HUI)", eta: "17:35" },
-      { route: "A43P", destZh: "往 粉嶺(聯和墟)", destEn: "TO FANLING (LUEN WO HUI)", eta: "17:30" },
-      { route: "A46", destZh: "往 火炭(駿景園)", destEn: "TO FO TAN", eta: "17:45" },
-      { route: "A47X", destZh: "往 大埔(太和)", destEn: "TO TAI PO (TAI WO)", eta: "18:00" },
-      { route: "E32", destZh: "往 葵芳(南)", destEn: "TO KWAI FONG (SOUTH)", eta: "17:28" },
-      { route: "E33", destZh: "往 屯門市中心", destEn: "TO TUEN MUN CENTRAL", eta: "17:30" },
-      { route: "E36", destZh: "往 元朗(八鄉路)", destEn: "TO YUEN LONG (PAT HEUNG)", eta: "17:35" },
-      { route: "E37", destZh: "往 天水圍市中心", destEn: "TO TIN SHUI WAI TOWN", eta: "17:40" },
-      { route: "E41", destZh: "往 大埔頭", destEn: "TO TAI PO TAU", eta: "17:45" },
-      { route: "E42", destZh: "往 沙田(博康)", destEn: "TO SHA TIN (POK HONG)", eta: "17:50" }
+      { route: "A30", destZh: "往 梨木樹", destEn: "TO LEI MUK SHUE" },
+      { route: "A31", destZh: "往 荃灣(如心廣場)", destEn: "TO TSUEN WAN (NINA TOWER)" },
+      { route: "A32", destZh: "往 葵涌邨", destEn: "TO KWAI CHUNG ESTATE" },
+      { route: "A33", destZh: "往 屯門公路轉車站", destEn: "TO TUEN MUN ROAD BBI" },
+      { route: "A34", destZh: "往 洪水橋(洪元路)", destEn: "TO HUNG SHUI KIU (HUNG YUEN ROAD)" },
+      { route: "A36", destZh: "往 錦上路站", destEn: "TO KAM SHEUNG ROAD STATION" },
+      { route: "A38", destZh: "往 荃灣(荃威花園)", destEn: "TO TSUEN WAN (ALLWAY GARDENS)" },
+      { route: "A41", destZh: "往 碩門邨", destEn: "TO SHEK MUN ESTATE" },
+      { route: "A41P", destZh: "往 烏溪沙站", destEn: "TO WU KAI SHA STATION" },
+      { route: "A42", destZh: "往 黃泥頭", destEn: "TO WONG NAI TAU" },
+      { route: "A43", destZh: "往 粉嶺(聯和墟)", destEn: "TO FANLING (LUEN WO HUI)" },
+      { route: "A43P", destZh: "往 粉嶺(聯和墟)", destEn: "TO FANLING (LUEN WO HUI)" },
+      { route: "A46", destZh: "往 火炭(駿景園)", destEn: "TO FO TAN (ROYAL ASCOT)" },
+      { route: "A47X", destZh: "往 大埔(太和)", destEn: "TO TAI PO (TAI WO)" },
+      { route: "E32", destZh: "往 葵芳(南)", destEn: "TO KWAI FONG (SOUTH)" },
+      { route: "E33", destZh: "往 屯門市中心", destEn: "TO TUEN MUN CENTRAL" },
+      { route: "E36", destZh: "往 元朗(八鄉路)", destEn: "TO YUEN LONG (PAT HEUNG ROAD)" },
+      { route: "E37", destZh: "往 天水圍市中心", destEn: "TO TIN SHUI WAI TOWN CENTRE" },
+      { route: "E41", destZh: "往 大埔頭", destEn: "TO TAI PO TAU" },
+      { route: "E42", destZh: "往 沙田(博康)", destEn: "TO SHA TIN (POK HONG)" }
     ];
 
     let routesData = [];
     let currentPage = 0;
-    let gtcStopIds = []; // 自動存放找出後的真實站點 ID
+    let gtcStopIds = []; 
 
     function updateClock() {
       const now = new Date();
@@ -230,33 +239,34 @@
       return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
     }
 
-    // 啟動時動態尋找 GTC 的正確 Stop IDs
     async function initGtcStopIds() {
+      const cachedIds = localStorage.getItem('gtc_stop_ids_v1');
+      if (cachedIds) {
+        gtcStopIds = JSON.parse(cachedIds);
+        return; 
+      }
+
       try {
+        document.getElementById('routeGrid').innerHTML = `<div class="loading-msg">🔄 系統首次初始化 (尋找機場站點中)，請稍候幾秒鐘...</div>`;
         const res = await fetch("https://data.etabus.gov.hk/v1/transport/kmb/stop");
         const json = await res.json();
         if (json && Array.isArray(json.data)) {
-          // 找尋所有名稱包含「地面運輸中心」的站點 ID
           const stops = json.data.filter(s => s.name_tc && s.name_tc.includes("地面運輸中心"));
           gtcStopIds = [...new Set(stops.map(s => s.stop))];
-          console.log("成功取得真正的機場 GTC Stop IDs:", gtcStopIds);
+          localStorage.setItem('gtc_stop_ids_v1', JSON.stringify(gtcStopIds)); 
         }
       } catch (err) {
         console.error("無法取得站點清單", err);
       }
     }
 
-    // 抓取 ETA
     async function fetchData() {
       try {
         if (gtcStopIds.length === 0) {
           await initGtcStopIds();
         }
 
-        if (gtcStopIds.length === 0) {
-          console.warn("找不到 GTC 的站點 ID，請稍後重試。");
-          return;
-        }
+        if (gtcStopIds.length === 0) return;
 
         const nowMs = Date.now() - 60000; 
         const map = new Map();
@@ -265,7 +275,6 @@
         let allData = [];
         let hasSuccess = false;
 
-        // 同時向所有查到的 GTC 站台發送請求
         const promises = gtcStopIds.map(id => 
           fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${id}?_t=${Date.now()}`)
           .then(r => r.json())
@@ -282,11 +291,9 @@
 
         if (hasSuccess) {
           allData.forEach(item => {
-            // 過濾：1. 是目標路線 / 2. 有提供ETA / 3. 排除開往機場的下車班次
             if (allowedRoutes.has(item.route) && item.eta && !item.dest_tc.includes("機場")) {
               const etaMs = new Date(item.eta).getTime();
               if (!isNaN(etaMs) && etaMs >= nowMs) {
-                // 如果同路線有多班車，只保留最快開出的一班
                 if (!map.has(item.route) || etaMs < map.get(item.route).rawTime) {
                   map.set(item.route, {
                     route: item.route,
@@ -316,18 +323,18 @@
     }
 
     function renderPage(pageIndex) {
+      const grid = document.getElementById('routeGrid');
+      
+      if (routesData.length === 0) {
+        grid.innerHTML = `<div class="loading-msg" style="color: #666;">目前時段暫無班次資料</div>`;
+        return;
+      }
+
       const totalPages = Math.ceil(routesData.length / ITEMS_PER_PAGE) || 1;
       currentPage = pageIndex % totalPages;
       if (currentPage < 0) currentPage = totalPages - 1;
 
-      const grid = document.getElementById('routeGrid');
       grid.innerHTML = '';
-
-      if (routesData.length === 0) {
-        grid.innerHTML = `<div style="grid-column: 1/4; text-align: center; font-size: clamp(24px, 4vh, 40px); padding-top: 5vh; font-weight: bold; color: #555;">目前時段暫無班次資料</div>`;
-        return;
-      }
-
       const startIndex = currentPage * ITEMS_PER_PAGE;
       const pageItems = routesData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
@@ -357,14 +364,14 @@
       else document.exitFullscreen().catch(() => {});
     });
 
-    // 啟動排程
     updateClock();
     setInterval(updateClock, 1000);
 
-    renderPage(0);
-    fetchData(); // 立即發動第一次資料獲取
-    setInterval(fetchData, 15000); // 15秒更新一次 ETA
-    setInterval(() => renderPage(currentPage + 1), 10000); // 10秒自動翻頁
+    fetchData(); 
+    setInterval(fetchData, 15000); 
+    setInterval(() => {
+      if (routesData.length > 0) renderPage(currentPage + 1);
+    }, 10000); 
   </script>
 </body>
 </html>
