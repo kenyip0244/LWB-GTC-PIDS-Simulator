@@ -198,35 +198,11 @@
     </div>
   </div>
 
-  <script>
+<script>
     const STOP_ID = "001552"; // GTC 機場地面運輸中心
-    const ITEMS_PER_PAGE = 15; // 每頁 15 筆 (3欄 x 5行)
+    const ITEMS_PER_PAGE = 15; // 3欄 x 5行
 
-    // 按英文字母與數字順序排列之基礎路線清單
-    const fallbackList = [
-      { route: "A30", destZh: "往 梨木樹", destEn: "TO LEI MUK SHUE", eta: "17:35" },
-      { route: "A31", destZh: "往 荃灣(如心廣場)", destEn: "TO TSUEN WAN (NINA TOWER)", eta: "17:30" },
-      { route: "A32", destZh: "往 葵涌邨", destEn: "TO KWAI CHUNG ESTATE", eta: "17:45" },
-      { route: "A33", destZh: "往 屯門公路轉車站", destEn: "TO TUEN MUN ROAD BBI", eta: "17:50" },
-      { route: "A34", destZh: "往 洪水橋(洪元路)", destEn: "TO HUNG SHUI KIU", eta: "17:45" },
-      { route: "A36", destZh: "往 錦上路站", destEn: "TO KAM SHEUNG ROAD STATION", eta: "17:25" },
-      { route: "A38", destZh: "往 荃灣(荃威花園)", destEn: "TO TSUEN WAN (ALLWAY)", eta: "18:05" },
-      { route: "A41", destZh: "往 碩門邨", destEn: "TO SHEK MUN ESTATE", eta: "17:35" },
-      { route: "A41P", destZh: "往 烏溪沙站", destEn: "TO WU KAI SHA STATION", eta: "17:35" },
-      { route: "A42", destZh: "往 黃泥頭", destEn: "TO WONG NAI TAU", eta: "18:00" },
-      { route: "A43", destZh: "往 粉嶺(聯和墟)", destEn: "TO LUEN WO HUI", eta: "17:35" },
-      { route: "A43P", destZh: "往 粉嶺(聯和墟)", destEn: "TO LUEN WO HUI", eta: "17:30" },
-      { route: "A46", destZh: "往 火炭(駿景園)", destEn: "TO FO TAN", eta: "17:45" },
-      { route: "A47X", destZh: "往 大埔(太和)", destEn: "TO TAI PO (TAI WO)", eta: "18:00" },
-      { route: "E32", destZh: "往 葵芳(南)", destEn: "TO KWAI FONG (SOUTH)", eta: "17:28" },
-      { route: "E33", destZh: "往 屯門市中心", destEn: "TO TUEN MUN CENTRAL", eta: "17:30" },
-      { route: "E36", destZh: "往 元朗(八鄉路)", destEn: "TO YUEN LONG (PAT HEUNG)", eta: "17:35" },
-      { route: "E37", destZh: "往 天水圍市中心", destEn: "TO TIN SHUI WAI TOWN", eta: "17:40" },
-      { route: "E41", destZh: "往 大埔頭", destEn: "TO TAI PO TAU", eta: "17:45" },
-      { route: "E42", destZh: "往 沙田(博康)", destEn: "TO SHA TIN (POK HONG)", eta: "17:50" }
-    ];
-
-    let routesData = [...fallbackList];
+    let routesData = [];
     let currentPage = 0;
 
     function updateClock() {
@@ -244,17 +220,19 @@
 
     async function fetchData() {
       try {
-        const res = await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${STOP_ID}`);
+        // 加入時間戳記 _t 確保每次都是最新的實時資料，避開瀏覽器/ISP 快取
+        const res = await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${STOP_ID}?_t=${Date.now()}`);
         const json = await res.json();
 
-        if (json && Array.isArray(json.data) && json.data.length > 0) {
+        if (json && Array.isArray(json.data)) {
           const nowMs = Date.now() - 60000; 
           const map = new Map();
 
           json.data.forEach(item => {
             if (item.eta) {
               const etaMs = new Date(item.eta).getTime();
-              if (!isNaN(etaMs) && etaMs >= nowMs) {
+              // 過濾掉已過期的班次，保留未來的班次
+              if (etaMs >= nowMs) {
                 if (!map.has(item.route) || etaMs < map.get(item.route).rawTime) {
                   map.set(item.route, {
                     route: item.route,
@@ -268,23 +246,22 @@
             }
           });
 
+          // 如果有抓到資料，更新路線列表
           if (map.size > 0) {
             routesData = Array.from(map.values()).sort((a, b) =>
               a.route.localeCompare(b.route, 'en', { numeric: true, sensitivity: 'base' })
             );
+            renderPage(currentPage); // 抓到即更新介面
           }
         }
       } catch (err) {
-        console.warn("API 連線異常，維持基礎清單：", err);
+        console.warn("無法取得即時 API 資料，請檢查連線：", err);
       }
-      renderPage(currentPage);
     }
 
     function renderPage(pageIndex) {
       const totalPages = Math.ceil(routesData.length / ITEMS_PER_PAGE) || 1;
       currentPage = pageIndex % totalPages;
-      if (currentPage < 0) currentPage = totalPages - 1;
-
       const grid = document.getElementById('routeGrid');
       grid.innerHTML = '';
 
@@ -317,13 +294,13 @@
       else document.exitFullscreen().catch(() => {});
     });
 
+    // 啟動流程
     updateClock();
-    setInterval(updateClock, 1000);
+    setInterval(updateClock, 1000); // 秒級時鐘刷新
 
-    renderPage(0);
-    fetchData();
-    setInterval(fetchData, 30000);
-    setInterval(() => renderPage(currentPage + 1), 10000);
+    fetchData(); 
+    setInterval(fetchData, 15000); // 改為 15 秒刷新一次 API 以確保「實時」感
+    setInterval(() => { currentPage = (currentPage + 1) % Math.ceil((routesData.length || 1) / ITEMS_PER_PAGE); renderPage(currentPage); }, 10000);
   </script>
 </body>
 </html>
