@@ -46,14 +46,16 @@
 
     .clock-empty { background-color: var(--white); }
 
+    /* 更新：時鐘容器移至第三欄左側，內部文字互相比例置中 */
     .clock-wrapper {
       grid-column: 3;
       background-color: var(--white);
       display: flex;
       flex-direction: column;
       justify-content: center;
-      align-items: flex-end;
-      padding-right: 1.5vw; 
+      align-items: center; /* 讓時間 XX:XX 於標題下方置中 */
+      justify-self: flex-start; /* 將整個區塊對齊到第三欄的最左邊 */
+      padding-left: 1.5vw; /* 稍微留點空間，不讓文字死貼框線 */
     }
 
     .clock-title {
@@ -62,6 +64,7 @@
       color: var(--orange);
       line-height: 1.2;
       margin-bottom: 0.5vh; 
+      text-align: center;
     }
 
     .clock-time {
@@ -69,6 +72,7 @@
       font-weight: 900;
       color: var(--orange);
       line-height: 1;
+      text-align: center;
     }
 
     .grid-wrapper {
@@ -177,6 +181,7 @@
     <div class="clock-bar">
       <div class="clock-empty"></div>
       <div class="clock-empty"></div>
+      <!-- 時鐘區塊 -->
       <div class="clock-wrapper">
         <div class="clock-title">現在時間 Current Time :</div>
         <div class="clock-time" id="currentTime">--:--</div>
@@ -198,7 +203,6 @@
   <script>
     const ITEMS_PER_PAGE = 15; 
 
-    // 使用您更新後、更精準的路線中英對照清單
     const fallbackList = [
       { route: "A30", destZh: "往 梨木樹", destEn: "TO LEI MUK SHUE" },
       { route: "A31", destZh: "往 荃灣(如心廣場)", destEn: "TO TSUEN WAN (NINA TOWER)" },
