@@ -18,10 +18,9 @@
 
     .display-screen { width: 100vw; height: 100vh; background-color: var(--white); display: flex; flex-direction: column; }
 
-    /* 更新：白底、橙色文字時鐘區域 */
     .clock-bar {
       background-color: var(--white);
-      color: var(--orange); /* 橙色文字 */
+      color: var(--orange); 
       padding: 1vh 2vw;
       display: flex;
       justify-content: flex-end;
@@ -31,12 +30,7 @@
       height: 7vh;
       border-bottom: 1px solid var(--border-gray);
     }
-    .clock-bar span { 
-      margin-left: 10px; 
-      font-size: clamp(24px, 4vh, 50px); 
-      font-weight: 900; 
-      color: var(--orange); /* 橙色數字 */
-    }
+    .clock-bar span { margin-left: 10px; font-size: clamp(24px, 4vh, 50px); font-weight: 900; color: var(--orange); }
 
     .grid-wrapper { flex: 1; display: flex; flex-direction: column; background-color: var(--border-gray); }
 
@@ -72,7 +66,32 @@
   <script>
     const STOP_ID = "001552";
     const ITEMS_PER_PAGE = 12;
-    let routesData = [];
+
+    // 恢復您完整要求的路線清單
+    const initialList = [
+      { route: "A30", destZh: "往 梨木樹", destEn: "TO LEI MUK SHUE" },
+      { route: "A31", destZh: "往 荃灣(如心廣場)", destEn: "TO TSUEN WAN (NINA TOWER)" },
+      { route: "A32", destZh: "往 葵涌邨", destEn: "TO KWAI CHUNG ESTATE" },
+      { route: "A33", destZh: "往 屯門公路轉車站", destEn: "TO TUEN MUN ROAD BBI" },
+      { route: "A34", destZh: "往 洪水橋(洪元路)", destEn: "TO HUNG SHUI KIU" },
+      { route: "A36", destZh: "往 錦上路站", destEn: "TO KAM SHEUNG ROAD STATION" },
+      { route: "A38", destZh: "往 荃灣(荃威花園)", destEn: "TO TSUEN WAN (ALLWAY)" },
+      { route: "A41", destZh: "往 碩門邨", destEn: "TO SHEK MUN ESTATE" },
+      { route: "A41P", destZh: "往 烏溪沙站", destEn: "TO WU KAI SHA STATION" },
+      { route: "A42", destZh: "往 黃泥頭", destEn: "TO WONG NAI TAU" },
+      { route: "A43", destZh: "往 粉嶺(聯和墟)", destEn: "TO LUEN WO HUI" },
+      { route: "A43P", destZh: "往 粉嶺(聯和墟)", destEn: "TO LUEN WO HUI" },
+      { route: "A46", destZh: "往 火炭(駿景園)", destEn: "TO FO TAN" },
+      { route: "A47X", destZh: "往 大埔(太和)", destEn: "TO TAI PO (TAI WO)" },
+      { route: "E32", destZh: "往 葵芳(南)", destEn: "TO KWAI FONG (SOUTH)" },
+      { route: "E33", destZh: "往 屯門市中心", destEn: "TO TUEN MUN CENTRAL" },
+      { route: "E36", destZh: "往 元朗(八鄉路)", destEn: "TO YUEN LONG (PAT HEUNG)" },
+      { route: "E37", destZh: "往 天水圍市中心", destEn: "TO TIN SHUI WAI TOWN" },
+      { route: "E41", destZh: "往 大埔頭", destEn: "TO TAI PO TAU" },
+      { route: "E42", destZh: "往 沙田(博康)", destEn: "TO SHA TIN (POK HONG)" }
+    ];
+
+    let routesData = [...initialList];
     let currentPage = 0;
 
     function updateClock() {
@@ -82,38 +101,38 @@
     }
 
     async function fetchData() {
+      const proxyUrl = 'https://api.allorigins.win/get?url=';
+      const targetUrl = encodeURIComponent(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${STOP_ID}`);
+      
       try {
-        const res = await fetch(`https://data.etabus.gov.hk/v1/transport/kmb/stop-eta/${STOP_ID}`);
+        const res = await fetch(proxyUrl + targetUrl);
         const json = await res.json();
-        if (json?.data) {
-          const nowMs = Date.now() - 60000;
+        const data = JSON.parse(json.contents);
+
+        if (data?.data) {
           const map = new Map();
-          json.data.forEach(item => {
-            if (item.eta) {
-              const etaMs = new Date(item.eta).getTime();
-              if (etaMs >= nowMs && (!map.has(item.route) || etaMs < map.get(item.route).rawTime)) {
-                map.set(item.route, {
-                  route: item.route,
-                  destZh: `往 ${item.dest_tc || ''}`,
-                  destEn: `TO ${item.dest_en ? item.dest_en.toUpperCase() : ''}`,
-                  eta: `${String(new Date(item.eta).getHours()).padStart(2, '0')}:${String(new Date(item.eta).getMinutes()).padStart(2, '0')}`,
-                  rawTime: etaMs
-                });
-              }
+          data.data.forEach(item => {
+            if (item.eta && !map.has(item.route)) {
+              map.set(item.route, {
+                eta: `${String(new Date(item.eta).getHours()).padStart(2, '0')}:${String(new Date(item.eta).getMinutes()).padStart(2, '0')}`
+              });
             }
           });
-          routesData = Array.from(map.values()).sort((a, b) => a.route.localeCompare(b.route, 'en', { numeric: true }));
+          
+          routesData = initialList.map(r => ({
+            ...r,
+            eta: map.get(r.route)?.eta || "-"
+          })).sort((a, b) => a.route.localeCompare(b.route, 'en', { numeric: true }));
+          
+          renderPage(currentPage);
         }
-      } catch (err) { console.warn("API Error", err); }
-      renderPage(currentPage);
+      } catch (err) { console.warn("Proxy Error", err); }
     }
 
     function renderPage(pageIndex) {
-      const totalPages = Math.ceil(routesData.length / ITEMS_PER_PAGE) || 1;
-      currentPage = pageIndex % totalPages;
-      const grid = document.getElementById('routeGrid');
-      grid.innerHTML = '';
-      const pageItems = routesData.slice(currentPage * ITEMS_PER_PAGE, (currentPage + 1) * ITEMS_PER_PAGE);
+      const gridContainer = document.getElementById('routeGrid');
+      gridContainer.innerHTML = '';
+      const pageItems = routesData.slice(pageIndex * ITEMS_PER_PAGE, (pageIndex + 1) * ITEMS_PER_PAGE);
       for (let i = 0; i < ITEMS_PER_PAGE; i++) {
         const item = pageItems[i];
         const cell = document.createElement('div');
@@ -127,14 +146,14 @@
             <div class="route-eta">${item.eta}</div>
           `;
         }
-        grid.appendChild(cell);
+        gridContainer.appendChild(cell);
       }
     }
 
     document.addEventListener('dblclick', () => { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); });
     setInterval(updateClock, 1000);
     setInterval(fetchData, 30000);
-    setInterval(() => renderPage(currentPage + 1), 10000);
+    setInterval(() => { currentPage = (currentPage + 1) % Math.ceil(routesData.length / ITEMS_PER_PAGE); renderPage(currentPage); }, 10000);
     updateClock();
     fetchData();
   </script>
