@@ -5,10 +5,22 @@ A web & desktop simulator replicating the Passenger Information Display System (
 
 ---
 
-## 📥 Download / 桌面版下載
+## 🌐 Web Version / 線上網頁版
 
-Pre-built binaries for Windows, macOS, and Linux are automatically compiled and available on the **[Releases](https://github.com/kenyip0244/LWB-GTC-PIDS-Simulator/releases)** page.  
-專案已透過 GitHub Actions 自動編譯全平台安裝檔，可直接至 **[Releases 發布頁面](https://github.com/kenyip0244/LWB-GTC-PIDS-Simulator/releases)** 下載：
+Try the live web version directly in your browser without installing anything:  
+無需安裝任何軟體，直接透過瀏覽器開啟線上體驗：
+
+👉 **[Live Demo / 線上預覽](https://kenyip0244.github.io/LWB-GTC-PIDS-Simulator/)**
+
+* **Tip:** Double-click anywhere on the screen to toggle full-screen mode for the best display experience.  
+* **提示：** 在網頁畫面上按滑鼠雙擊，即可切換為全螢幕顯示模式。
+
+---
+
+## 📥 Desktop Downloads / 桌面版下載
+
+Pre-built binaries for Windows, macOS, and Linux are automatically compiled via GitHub Actions:  
+已透過 GitHub Actions 自動編譯全平台安裝檔，可至 **[Releases 發布頁面](https://github.com/kenyip0244/LWB-GTC-PIDS-Simulator/releases)** 下載：
 
 | Platform / 作業系統 | File Format / 檔案格式 | Description / 說明 |
 | :--- | :--- | :--- |
@@ -73,10 +85,13 @@ npm run make
 
 ```
 
+---
+
 ## 📡 Data Source / 資料來源
 
 * [DATA.GOV.HK - KMB Route, Bus Stop and ETA data](https://www.google.com/search?q=https://data.gov.hk/tc-data/dataset/hk-td-tis_21-kmb-route-stop-eta) / 資料一線通：九巴及龍運路線、巴士站及預計到站時間數據
 
+---
 
 ## ⚠️ Disclaimer / 免責聲明
 
